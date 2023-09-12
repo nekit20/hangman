@@ -1,95 +1,99 @@
+'use client'
 import Image from 'next/image'
 import styles from './page.module.css'
+import Header from './components/Header'
+import Figure from './components/Figure'
+import WrongLetters from './components/WrongLetters'
+import Word from './components/Word'
+import { useEffect, useState } from 'react'
+import Popup from './components/Popup'
+
+const words = [{
+  id: 1,
+  question: 'Столица России',
+  answer: 'Москва'
+},
+{
+  id: 2,
+  question: 'Фамилия автора книги "Портрет Дориана Грея"',
+  answer: 'Уайльд'
+},
+{
+  id: 3,
+  question: 'Часть тела, соединяющая голову с туловищем',
+  answer: 'Шея'
+},
+{
+  id: 4,
+  question: 'Домашняя птица, самка петуха',
+  answer: 'Курица'
+}
+
+];
 
 export default function Home() {
+  const [rightLetters, setRightLetters] = useState([]);
+  const [wrongLetters, setWrongLetters] = useState([]);
+  const [currPos, setCurrPos] = useState(0);
+  const [isWon, setIsWon] = useState(false);
+  const [isLose, setIsLose] = useState(false);
+
+
+
+
+  function handleKey(e) {
+    if (e.keyCode >= 65 && e.keyCode <= 90) {
+      const letter = e.key.toLowerCase();
+
+      if (words[currPos].answer.toLowerCase().includes(letter)) {
+        if (!rightLetters.includes(letter))
+          setRightLetters([...rightLetters, letter]);
+      } else {
+        if (!wrongLetters.includes(letter))
+          setWrongLetters([...wrongLetters, letter]);
+      }
+    }
+  }
+
+
+  useEffect(() => {
+    let sum = 0;
+    for (let i = 0; i < words[currPos].answer.length; i++) {
+      if (rightLetters.includes(words[currPos].answer.split('')[i].toLowerCase())) {
+        sum = sum + 1;
+      }
+    }
+    if (sum === words[currPos].answer.length) {
+      setIsWon(true);
+    }
+
+  }, [rightLetters])
+
+  useEffect(() => {
+    if (wrongLetters.length >= 6) {
+      setIsLose(true);
+
+    }
+  }, [wrongLetters]);
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKey);
+    return () => {
+      window.removeEventListener("keydown", handleKey);
+    };
+  });
+
+
+
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+    <div style={{ textAlign: 'center' }}>
+      <Header key='header'></Header >
+      <Figure key='figure' wrongLetters={wrongLetters}></Figure>
+      <WrongLetters key='wrongletters' wrongLetters={wrongLetters}></WrongLetters>
+      <h1 style={{ marginTop: 'auto' }}>{words[currPos].question}</h1>
+      <Word key={words[currPos].id} rightLetters={rightLetters} word={words[currPos].answer}></Word>
+      <Popup setRightLetters={setRightLetters} setWrongLetters={setWrongLetters} key='popup' isLose={isLose} currPos={currPos} setIsLose={setIsLose} setIsWon={setIsWon} setCurrPos={setCurrPos} words={words} isWon={isWon} word={words[currPos].answer}></Popup>
+    </div>
   )
 }

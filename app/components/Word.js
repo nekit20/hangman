@@ -4,7 +4,7 @@ export default function Word({ word, rightLetters }) {
 
 	return (
 		<div className="word" id="word">
-			{arr.map(item => <div className='letter'>{rightLetters.includes(item.toLowerCase()) ? item : ''}</div>)}
+			{arr.map((item, index) => <div className='letter' key={index}>{rightLetters.includes(item.toLowerCase()) ? item : ''}</div>)}
 		</div>
 	)
 

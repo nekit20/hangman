@@ -87,7 +87,7 @@ export default function Home() {
 
 
   return (
-    <div style={{ textAlign: 'center' }}>
+    <div style={{ textAlign: 'center' }} key='main-block'>
       <Header key='header'></Header >
       <Figure key='figure' wrongLetters={wrongLetters}></Figure>
       <WrongLetters key='wrongletters' wrongLetters={wrongLetters}></WrongLetters>
